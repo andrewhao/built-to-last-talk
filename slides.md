@@ -1,208 +1,8 @@
 class: middle
 
-# Highly Cohesive,<br />Loosely Coupled<br />\(& Very Awesome\)
+# Built to Last
 
 #### A domain-driven approach to beautiful systems
-
----
-
-class: middle
-
-## Let's imagine tonight
-
-We work at a hot new startup: Delorean. The Uber for time-travel!
-
-## 💁⏳🚖🙋
-
----
-
-class: middle
-
-## OMG it's making so much money!
-
-🔥 We're releasing features right and left! 💵
-
----
-
-class: middle
-
-## But the code is a mess!
-
-As systems grow, they naturally want to fall into disarray...
-
----
-
-## The evolution of a feature
-
-#### Feature: As a passenger, I want to hail a Delorean
-
-* So I can travel in time!
-
----
-
-class: middle background-color-code
-
-```ruby
-class TripsController
-  def create
-    passenger = Passenger.find(params[:passenger_id])
-    driver = Driver.where(
-      available: true,
-      longitude: params[:longitude],
-      latitude: params[:latitude]
-    ).first
-    driver.send_to!(passenger)
-  end
-end
-```
-
----
-
-## The evolution of a feature
-
-#### Feature: As a passenger, I want to hail a Delorean
-
-* So I can travel in time!
-* ...and my credit card will be charged
-
----
-
-class: middle background-color-code
-
-```ruby
-class TripsController
-  def create
-    passenger = Passenger.find(params[:passenger_id])
-    driver = Driver.where(
-      available: true,
-      longitude: params[:longitude],
-      latitude: params[:latitude]
-    ).first
-    BraintreeService.charge(passenger)
-    driver.send_to!(passenger)
-  end
-end
-```
-
----
-
-## The evolution of a feature
-
-#### Feature: As a passenger, I want to hail a Delorean
-
-* So I can travel in time!
-* ...and my credit card will be charged
-* ...and the system should log the event to Google Analytics
----
-
-class: middle background-color-code
-
-```ruby
-class TripsController
-  def create
-    passenger = Passenger.find(params[:passenger_id])
-    driver = Driver.where(
-      available: true,
-      longitude: params[:longitude],
-      latitude: params[:latitude]
-    ).first
-    BraintreeService.charge(passenger)
-    AnalyticsService.log_ride_created!
-    driver.send_to!(passenger)
-  end
-end
-```
-
----
-
-## The evolution of a feature
-
-#### Feature: As a passenger, I want to hail a Delorean
-
-* So I can travel in time!
-* ...and my credit card will be charged
-* ...and the system should log the event to Google Analytics
-* ...and we should totally also do food delivery
-
----
-
-class: middle background-color-code
-
-```ruby
-class TripsController
-  def create
-    passenger = Passenger.find(params[:passenger_id])
-    is_food = params[:ride_type] == 'food'
-    driver = Driver.where(
-      can_food_delivery: is_food,
-      # ...
-    ).first
-    restaurant = Restaurant.find_by(meal_type: params[:meal_type])
-    BraintreeService.charge(passenger)
-    AnalyticsService.log_ride_created!
-    driver.itinerary.add(restaurant)
-    driver.itinerary.add(passenger)
-  end
-end
-```
-
----
-
-## Code clutter in Rails
-
-As the monolith grows, feature code is scattered across the app.
-
-```
-app/
-  controllers/trips_controller.rb
-  models/trip.rb
-  helpers/trip_helper.rb
-  services/calculate_trip_cost.rb
-```
-
----
-
-## Code clutter in Rails
-
-As the monolith grows, feature code is scattered across the app.
-
-```
-app/
-  controllers/restaurants_controller.rb
-  models/restaurant.rb
-  models/meal.rb
-  helpers/restaurant_helper.rb
-  services/calculate_meal_cost.rb
-```
-
----
-
-## Code clutter in Rails
-
-As the monolith grows, feature code is scattered across the app.
-
-```
-app/
-  controllers/puppy_deliveries_controller.rb
-  models/puppy_delivery.rb
-  models/animal_shelter.rb
-```
-
----
-
-class: middle
-
-## So here we are...
-
-* The code is tangled & difficult to change
-* Regressions are common
-* Features take forever to build & release
-
----
-
-class: middle center
-
-## 😭
 
 ---
 
@@ -220,59 +20,93 @@ class: middle center background-color-code
 
 ---
 
-class: middle center
-
-### Beautiful systems
-
----
-
-class: middle center
-
-### Beautiful systems are *highly cohesive*
-
----
-
-class: middle center
-
-### Beautiful systems are *loosely coupled*
-
----
-
 class: middle
 
-## Highly cohesive
+### Welcome to your first day at Delorean!
 
-Elements of a module are strongly related to each other
+It's so hot!
 
-Near each other, are easily accessible.
+But systems are hard to work in.
 
----
-
-class: middle center background-image-contain
-
-![Cohesion illustration](images/cohesion_illustration.png)
-
----
-
-class: middle
-
-## Loosely coupled
-
-Modules minimize their dependencies so that they are easily modifiable
+1. Too many teams in one codebase
+2. Changing a feature changes multiple codebases
+3. Cruft and naming is not consistent with your product owner's terms
 
 --
 
-Can evolve independently of other modules in the system
-
-???
-
-"The more that we must know of module B in order to understand module A, the more closely connected A is to B"
+Will this system last?
 
 ---
 
-class: middle center background-image-contain
+## I've been thinking about beautiful systems
 
-![Coupling illustration](images/coupling_illustration.png)
+In the code - elegance, syntax, form, expressiveness
+
+In the tooling - developer ergonomics
+
+In the tests - test practices & coverage
+
+--
+
+More pragmatically - will it <strike>blend</strike> last?
+
+???
+
+I've oftentimes thought that beautiful systems were composed of the form
+of the code - in its style, or in how developers would sit down and
+interact with it, or in how well it sat in tests.
+
+However, I've had the thought lately that a good measure of a beautiful
+system is its longevity.
+
+---
+
+## Lasting systems - what they are
+
+The system can live a long, productive life.
+
+Flexible and easy to change, to adapt to changing biz requirements.
+
+Easily maintained
+
+Resistant to the Dreaded Rewrite
+
+???
+
+It's not throwaway, but like all systems, it's not overengineered with
+the expectation that it must last forever
+
+---
+
+## Lasting systems - what they are not
+
+So terrible, nobody wants to work in it.
+
+So terrible, they cripple the business.
+
+???
+
+Lasting systems are NOT systems that are so crappy that you can't change
+them, and so everybody avoids it and it lives forever like a nightmare.
+
+Lasting systems are NOT systems that are so tangled that the business
+literally cannot function without it. Unrescuable?
+
+---
+
+### Your Typical Rails Monolith, after about 3 years:
+
+* Overflowing folders
+
+[PLACEHOLDER]: sample code?
+
+---
+
+class: middle center
+
+### An insight
+
+"Systems decompose well when they hide [encapsulate] important information" - D.L. Parnas
 
 ---
 
@@ -293,7 +127,11 @@ enterprise-speak.
 
 class: middle
 
-## Our goals tonight
+## Our goals today
+
+📖 **Agree upon a shared vocabulary** with our business partners
+
+--
 
 👓 **Visualize our system** from a domain perspective.
 
@@ -311,6 +149,10 @@ We'll learn to see the software from the business domain perspective
 
 Visualization is important: you can't improve what you can't see!
 
+This is a team exercise! If you're doing any of these alone by yourself
+because you're the Lead, or the Architect, you're doing this wrong. This
+is meant to be a communal, team-wide effort.
+
 ---
 
 class: middle center
@@ -324,6 +166,72 @@ class: middle center
 Everybody say "Strategic Design"
 
 We are going to go through an exercise called Context Mapping.
+
+---
+
+### Problem statement
+
+Systems too often become maintainable because there
+is imprecise, lazy concepts between code and the business.
+
+---
+
+#### Apply It! ⚡️
+
+## Step 0: Develop a Glossary
+
+Get your business domain experts and technical staff together in a room
+and build a definition list of the concepts and the actions in your
+domain.
+
+???
+
+Domain-Driven Design hinges on precise language and terminology.
+
+I know this probably isn't what you showed up for, but I want to drive
+home the point that long-lasting, beautiful systems have precise terms
+that dutifully map to real concepts in the business.
+
+---
+
+## Glossary
+
+Nouns - concepts (a.k.a. entities)
+
+Verbs - actions (a.k.a. events)
+
+---
+
+#### A sample glossary
+
+Driver: [Entity] A customer equipped with a car, focusing on providing driver services
+
+<strike>Passenger</strike> Participant: [Entity] A person seeking a ride to a
+specified location.
+
+HailedDriver: [Event] A user has signaled their intent to seek out a ride.
+
+ChargedCreditCard: [Event] A customer credit card has been charged for a transaction.
+
+???
+
+Here's the interesting part - you may find yourself talking through the
+intricacies of each model. Some of these may be assumed, emergent terms
+you've developed over the years at your company. Good - the point is to
+get it actually documented.
+
+Another benefit we get here is the ability for new engineers and product
+people to onboard quickly and get used to what your team does.
+
+Now put this up on a wall, or on a wiki! Somewhere where the team can
+continually reference in the future.
+
+---
+
+### Problem statement:
+
+We often don't know how to refactor our systems
+because we lack a high-level view of it.
 
 ---
 
@@ -385,6 +293,14 @@ _Delorean Supporting Domains:_
 --
 * **Customer Support** (keep people happy)
 
+???
+
+See anything interesting here? Most likely, these domains have a company
+unit devoted to them.
+
+In many companies, each of these organizational units have their own
+dedicated engineering staff.
+
 ---
 
 class: middle
@@ -392,6 +308,8 @@ class: middle
 #### Apply It! ⚡️
 
 ## Step 2: Draw domains on your diagram
+
+Brainstorm a list of domains. They may either be emergent or predefined
 
 Overlay your domains on top of the ERD diagram
 
@@ -848,6 +766,39 @@ Thus this is a very natural place to draw a seam!
 
 The organization has optimized for communication within itself,
 and has likely reduced its dependencies on other organizational units.
+
+---
+
+## Cohesion as a factor of business change
+
+The Context Map helps you understand where change is most likely to
+cluster - from the business functions that drive them.
+
+Thus, we organize our code anticipating such change together.
+
+---
+
+## Systems thinking
+
+Systems thinking is a process tool that forces us to think about our
+systems as living, breathing organisms.
+
+Systems built to last will take those factors into account - identifying
+work producers, minimizing waste, increasing efficiencies, localising and clustering work.
+
+---
+
+## The evolution of this localised change...
+
+1. Domain-oriented folders, to...
+2. Rails engines, to...
+3. Rails microservices with a shared AR gem and a message queue, to...
+4. Fully-decoupled, polyglot microservices
+
+Each of these evolutions is simply modeling a bounded context with
+stronger seams!
+
+"Component-Based Rails Applications" by Stephan Hagemann
 
 ---
 
