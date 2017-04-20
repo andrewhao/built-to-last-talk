@@ -38,6 +38,20 @@ Will this system last?
 
 ---
 
+## The landscape of Rails code:
+
+PLACEHOLDER: diagram of app folders
+
+Show app growing over time as app code drops in.
+
+---
+
+You're told to just go SOA, but how do you begin?
+
+You know you really need to break this out into microservices, but how?
+
+---
+
 ## I've been thinking about beautiful systems
 
 In the code - elegance, syntax, form, expressiveness
@@ -48,7 +62,7 @@ In the tests - test practices & coverage
 
 --
 
-More pragmatically - will it <strike>blend</strike> last?
+More pragmatically - last?
 
 ???
 
@@ -65,9 +79,15 @@ system is its longevity.
 
 The system can live a long, productive life.
 
+--
+
 Flexible and easy to change, to adapt to changing biz requirements.
 
+--
+
 Easily maintained
+
+--
 
 Resistant to the Dreaded Rewrite
 
@@ -94,19 +114,66 @@ literally cannot function without it. Unrescuable?
 
 ---
 
-### Your Typical Rails Monolith, after about 3 years:
+class: middle
 
-* Overflowing folders
+### An insight: "Information hiding"
 
-[PLACEHOLDER]: sample code?
+--
+
+Each module is responsible for a single design decision that it hides
+from the rest of the system.
+
+*D.L. Parnas - "On the Criteria to Be Used in Decomposing Systems into Modules"*
+
+--
+
+"Modules should hide information [decision-making] points" - D.L. Parnas
+
+???
+
+So I went looking for some inspiration, and learned about Parnas' work
+about modularization in the 1970s, words that stand still today.
+
+In this paper, he took a look at a program that did text processing and
+compared two approaches - one that divided up its processing
+responsibilities by its procedural components, do A, B, then C, and
+another one that was responsible for the individual design decisions to
+do various things like scan for words, storing data in internal data
+structures, etc.
+
+His point was that modules need to hide away minute implementation
+details from other modules - things that are likely to change!
 
 ---
 
-class: middle center
+class: 
 
-### An insight
+### An insight, cont'd
 
-"Systems decompose well when they hide [encapsulate] important information" - D.L. Parnas
+Where are decisions made?
+
+--
+
+Within the business functions and processes that generate them!
+
+* Marketing wants us to generate 5000 promo codes
+* Finance needs us to implement a new audit log
+* Product teams want us to internationalize the system, launch new food
+  delivery features.
+
+???
+
+Even though Parnas' paper looked at a single program and attempted to
+rethink its division of labor from flow to responsibility, we can take
+this one step further and ask ourselves - how can our systems hide the
+complexity of the decisions of each business organization from each
+other?
+
+---
+
+class: middle
+
+Welcome to domain bloat
 
 ---
 
@@ -125,23 +192,23 @@ enterprise-speak.
 
 ---
 
-class: middle
+class: 
 
 ## Our goals today
 
-📖 **Agree upon a shared vocabulary** with our business partners
+📖 **Develop a shared vocabulary** with our business partners
 
 --
 
-👓 **Visualize our system** from a domain perspective.
+👓 **Visualize our system** from a domain perspective
 
 --
 
-✏️ Learn insights to **draw boundaries** in our code!
+✏️ **Discover the hidden boundaries** in our system(s)
 
 --
 
-🛠 Do a little bit of **refactoring**.
+🛠 Do a little bit of **refactoring**
 
 ???
 
@@ -246,6 +313,11 @@ I like to generate mine with a gem like [`railroady`](https://github.com/preston
 
 If you have multiple systems, do this for each system.
 
+???
+
+Caveat: this is a bottom-up design view of the system, and there is also a
+place for top-down design.
+
 ---
 
 class: middle center background-image-contain background-white
@@ -280,9 +352,6 @@ that play roles in making the **Core Domain** happen.
 _Delorean Supporting Domains:_
 
 * **Driver Routing** (route me from X to Y)
-
---
-* **Notifications** (push notifications)
 
 --
 * **Financial Transactions** (charge the card)
