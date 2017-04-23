@@ -190,9 +190,9 @@ details from other modules - things that are likely to change!
 
 ---
 
-## Applying to our business domain...
+## From software program to the entire system
 
-Where to find difficult design decisions likely to change?
+Where are the difficult design decisions in this company that are likely to change?
 
 ???
 
@@ -205,7 +205,7 @@ other?
 
 --
 
-Within the business functions and processes that generate them!
+#### Within the business groups that generate them!
 
 ---
 
@@ -339,7 +339,7 @@ are imprecise, lazy names between code and the business.
 
 ---
 
-#### Apply It! ⚡️
+#### Apply It! 🤖
 
 ## Develop a Glossary
 
@@ -396,6 +396,19 @@ continually reference in the future.
 
 ---
 
+### That's a Ubiquitous Language
+
+Rename concepts in code
+
+Only applies to a context of the business
+
+
+???
+
+Now you can go and rename misnomers in the code.
+
+---
+
 ### Problem statement:
 
 We often don't know how to refactor our systems
@@ -403,7 +416,7 @@ because we lack a high-level view of it.
 
 ---
 
-#### Apply It! ⚡️
+#### Apply It! 🤖
 
 ## Visualize Your System
 
@@ -502,13 +515,11 @@ dedicated engineering staff.
 
 class: middle
 
-#### Apply It! ⚡️
+#### Apply It! 🤖
 
-## Draw domains on your diagram
+## Discover the domains on your diagram
 
-Brainstorm a list of domains. They may either be emergent or predefined
-
-Overlay your domains on top of the ERD diagram
+Look for clustered groupings.
 
 You might discover some domains you never even thought you had!
 
@@ -536,6 +547,8 @@ background-image: url(images/erd-2-domains.jpg)
 ---
 
 ## Top-down or bottom-up?
+
+We did a bottom-up discovery here.
 
 ???
 
@@ -578,13 +591,37 @@ background-image: url(images/erd-2-domains.jpg)
 
 class: middle
 
-### Domain
+### Congrats - we've got a list of domains in our system
 
-An area of the business that accomplishes a task
+And a rough mapping of what domain models go where.
 
-### Bounded Context
+---
 
-??
+class: middle
+
+## Now let's talk boundaries
+
+Boundaries in Rails:
+
+1. The Rails App
+
+--
+2. Gems
+
+--
+3. Modules
+
+--
+4. Classes
+
+--
+5. External API
+
+--
+6. Rails Engines
+
+--
+7. A separate app
 
 ---
 
@@ -696,7 +733,7 @@ that's an ideal world we'll drive toward.
 
 ---
 
-#### Apply It! ⚡️
+#### Apply It! 🤖
 
 ## Overlay your bounded contexts
 
@@ -828,7 +865,7 @@ they live in the same organizational unit.
 
 ---
 
-#### Apply It! ⚡️
+#### Apply It! 🤖
 
 ## Break your application into domain modules
 
