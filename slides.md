@@ -10,8 +10,7 @@ class: middle background-color-delorean
 
 ## Welcome to your first day at Delorean! 🚗💥🕖
 
-
-It's so hot!
+It's like Uber... for time travel!
 
 ???
 
@@ -26,9 +25,9 @@ We're changing the world, indeed.
 
 class: background-color-delorean
 
-## It's a hot mess!
+## And it's a hot mess!
 
-It moved a teensy bit too fast:
+We moved a teensy bit too fast:
 
 1. Too many teams in one codebase
 
@@ -48,7 +47,7 @@ have to be coded across several systems to coordinate a big release! No
 big deal, you'll get used to it.
 
 --
-3. Cruft and naming is not consistent with your product owner's terms
+3. Concepts inconsistently named
 
 ???
 Finally, there are some funny naming conventions here and there, so when
@@ -99,7 +98,7 @@ In the tests - test practices & coverage
 
 --
 
-In its longevity - built to adapt to and embrace change
+In its **longevity** - built to adapt to and embrace change
 
 ???
 
@@ -135,6 +134,8 @@ the expectation that it must last forever
 
 So terrible, nobody wants to work in it.
 
+--
+
 So terrible, they cripple the business.
 
 ???
@@ -165,6 +166,12 @@ another one that was responsible for the individual design decisions to
 do various things like scan for words, storing data in internal data
 structures, etc.
 
+
+---
+
+class: middle center background-image-contain background-white
+
+background-image: url(images/parnas-paper.png)
 
 ---
 
@@ -220,10 +227,7 @@ Within the business functions and processes that generate them!
 
 --
 * Product teams want us to launch food delivery in a second market
-
----
-
-class: middle
+--
 
 #### (That sounds like change!)
 
@@ -312,13 +316,13 @@ We are going to go through an exercise called Context Mapping.
 ### Problem statement
 
 Systems too often become unmaintainable because there
-are imprecise, lazy concepts between code and the business.
+are imprecise, lazy names between code and the business.
 
 ---
 
 #### Apply It! ⚡️
 
-## Step 0: Develop a Glossary
+## Develop a Glossary
 
 Get your business domain experts and technical staff together in a room
 and build a definition list of the concepts and the actions in your
@@ -346,12 +350,17 @@ Verbs - actions (a.k.a. events)
 
 Driver: [Entity] A customer equipped with a car, focusing on providing driver services
 
+--
 <strike>Passenger</strike> Participant: [Entity] A person seeking a ride to a
 specified location.
 
-HailedDriver: [Event] A user has signaled their intent to seek out a ride.
+--
 
-ChargedCreditCard: [Event] A customer credit card has been charged for a transaction.
+ HailedDriver: [Event] A user has signaled their intent to seek out a ride.
+
+--
+
+ ChargedCreditCard: [Event] A customer credit card has been charged for a transaction.
 
 ???
 
@@ -377,7 +386,7 @@ because we lack a high-level view of it.
 
 #### Apply It! ⚡️
 
-## Step 1: Visualize Your System
+## Visualize Your System
 
 Let's generate an ERD diagram!
 
@@ -419,7 +428,9 @@ class: middle center
 
 ---
 
-## Core domain
+#### Definition! 📖
+
+### Core domain
 
 The **Core Domain** is the thing that your business does that makes it unique.
 
@@ -437,22 +448,21 @@ Here at Delorean, we focus on transportation.
 
 ---
 
-## Supporting domains
+#### Definition! 📖
+
+### Supporting domains
 
 A **Supporting Domain** (or Subdomain) are the areas of the business
 that play roles in making the **Core Domain** happen.
 
 --
-
-_Delorean Supporting Domains:_
-
 * **Driver Routing** (route me from X to Y)
 
 --
-* **Financial Transactions** (charge the card)
+* **Financial Transactions** (charge the card, pay the driver)
 
 --
-* **Product Analytics** (track business metrics)
+* **Optimization & Analytics** (track business metrics)
 
 --
 * **Customer Support** (keep people happy)
@@ -475,7 +485,7 @@ class: middle
 
 #### Apply It! ⚡️
 
-## Step 2: Draw domains on your diagram
+## Draw domains on your diagram
 
 Brainstorm a list of domains. They may either be emergent or predefined
 
@@ -494,31 +504,39 @@ before, you can
 
 ---
 
-## Top-down context mapping
+class: middle center background-image-contain background-white
+
+background-image: url(images/erd.png)
+
+---
+
+class: middle center background-image-contain background-white
+
+background-image: url(images/erd-2-domains.jpg)
+
+---
+
+## Top-down or bottom-up?
+
+???
 
 Go ahead and draw your subdomains over each of the models.
 
-**Do this if:**
+Top down:
 
 * a simple scheme for your business, or
 * you've got a pretty good idea of how to do this.
-
----
 
 If you already know what your business subdomains do, you can
 attempt to overlay your subdomains over the diagram, or even make sticky
 note diagrams over them.
 
----
-
-## Bottom-up context mapping
+Bottom-up context mapping:
 
 Looking at our ERD diagram, we allow groupings and patterns guide us to
 the invisible markers and lines between domains in our systems.
 
 You may even see some domains you haven't thought of before!
-
-???
 
 In a bottom-up manner of context mapping, we are going to allow the
 diagram to guide us to these invisible groupings. We should see some
@@ -536,6 +554,18 @@ background-image: url(images/erd.png)
 class: middle center background-image-contain background-white
 
 background-image: url(images/erd-2-domains.jpg)
+
+---
+
+class: middle
+
+### Domain
+
+An area of the business that accomplishes a task
+
+### Bounded Context
+
+??
 
 ---
 
@@ -647,7 +677,7 @@ that's an ideal world we'll drive toward.
 
 #### Apply It! ⚡️
 
-## Step 3: Overlay your bounded contexts
+## Overlay your bounded contexts
 
 Next up - with a different color pen or marker, draw lines around system
 boundaries / bounded contexts.
