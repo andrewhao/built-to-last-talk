@@ -569,7 +569,9 @@ An area of the business that accomplishes a task
 
 ---
 
-## Bounded Contexts
+#### Definition! 📖
+
+### Bounded Contexts
 
 A **Bounded Context** is:
 
@@ -659,19 +661,19 @@ systems, but we won't elucidate upon it too much here.
 
 ---
 
-## tl;dr: Bounded Contexts show us what's in front of us
+## Bounded Contexts are software systems
 
-Bounded Contexts are a *solution space* term. Artifacts of the real
-world.
+We mean that they are real software systems that encode real concepts in code.
+
+---
+
+## Bounded Contexts are linguistic boundaries
 
 Bounded Contexts limit the *applicability* of each model, term, or idea.
 
-
-That's why when we speak of Bounded Contexts, we mean that they are real
-software systems that encode real concepts in code.
-
 You won't have all the Bounded Contexts you need at the moment, but
 that's an ideal world we'll drive toward.
+
 
 ---
 
@@ -726,7 +728,7 @@ PLACEHOLDER: context map directionalities
 
 ---
 
-## Congrats! You just made a Context Map!
+## You just made a Context Map!
 
 A **Context Map** gives us a place to see the current system as-is (the
 problem space), the strategic domains, and their dependencies.
