@@ -241,16 +241,33 @@ Show app growing over time as app code drops in.
 
 ---
 
-You're told to just go SOA, but how do you begin?
+## How do we get out of the world of the monolith?
 
-You know you really need to break this out into microservices, but how?
+So... just do microservices?
+
+What do I extract?
+
+What if I extract something that's too specific? Too generic?
+
+???
+
+I used to work at a Rails shop that had a massive monolith.
+
+I wished for an insight that would help me understand what exactly
+belonged where, or gave me general insights toward.
 
 ---
 
 class: middle
 
-We need a way to isolate business partners from introducing change that
-would affect other business partners.
+### A rule of thumb: design systems around your organizational structure!
+
+Remember Conway's Law?
+
+???
+
+I want to put forth that a good rule of thumb is an organizational
+pattern that isolates business processes from others.
 
 ---
 
@@ -259,6 +276,8 @@ class: middle
 ## Introducing Domain-Driven Design
 
 DDD is both a set of high-level design activities and specific software patterns
+
+PLACEHOLDER: book image
 
 ???
 
