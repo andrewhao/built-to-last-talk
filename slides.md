@@ -98,7 +98,8 @@ In the tests - test practices & coverage
 
 --
 
-In its **longevity** - built to adapt to and embrace change
+In its **longevity** - whether it stands the test of time with
+changing business and product requirements
 
 ???
 
@@ -111,55 +112,54 @@ system is its longevity.
 
 ---
 
-## Lasting systems - what they are
+## Long-lasting systems
 
-Flexible and easy to change
+Just large enough - knows its boundaries
+
+???
+
+A lasting system is just large enough - it knows where its responsibilities lie, and doesn't try to exceed them. Systems that get too large tend to get bogged down in feature bloat, and make productivity grind to a halt.
 
 --
 
 Highly cohesive and loosely coupled
 
+???
+
+Additionally, a lasting system has properties of being highly cohesive -
+that is, the concepts in the system are grouped "near" each other -
+and loosely coupled, that is that each module in the system minimizes
+its dependencies on others.
+
 --
 
 Precise semantics that fully express the business domain
 
----
-
-## Lasting systems - what they are not
-
-So terrible, nobody wants to work in it.
-
---
-
-So terrible, they cripple the business.
-
 ???
 
-Lasting systems are NOT systems that are so crappy that you can't change
-them, and so everybody avoids it and it lives forever like a nightmare.
+Finally, it uses expressive, precise language and semantics to describe
+what goes on in the business realm. Developers have no need to mentally
+translate business process to system functions - the code tends to read
+exactly like they came out of your product owner's mouth.
 
-Lasting systems are NOT systems that are so tangled that the business
-literally cannot function without it. Unrescuable?
+Now these are obviously not an all-encompassing list of what it looks
+like to work in a long-lasting system, but these are the properties we
+will investigate today.
 
 ---
 
 class: middle
 
+#### A blast from the past 🕰
+
 ### Information hiding
 
-*D.L. Parnas - "On the Criteria to Be Used in Decomposing Systems into Modules"*
+[*D.L. Parnas - "On the Criteria to Be Used in Decomposing Systems into Modules"*](https://www.cs.umd.edu/class/spring2003/cmsc838p/Design/criteria.pdf)
 
 ???
 
 So I went looking for some inspiration, and learned about Parnas' work
 about modularization in the 1970s, words that stand still today.
-
-In this paper, he took a look at a program that did text processing and
-compared two approaches - one that divided up its processing
-responsibilities by its procedural components, do A, B, then C, and
-another one that was responsible for the individual design decisions to
-do various things like scan for words, storing data in internal data
-structures, etc.
 
 
 ---
@@ -168,20 +168,42 @@ class: middle center background-image-contain background-white
 
 background-image: url(images/parnas-paper.png)
 
+???
+
+
+In this paper, he took a look at a program that did text processing and
+compared two approaches - one that divided up its processing
+responsibilities by its procedural components, do A, B, then C, and
+another one that was responsible for the individual design decisions to
+do various things like scan for words, storing data in internal data
+structures, etc.
+
+It might go without saying, but the second one was found much more
+flexible and elegant. He said that the second way allowed the user to
+change internal decisions like how lines were stored in memory or on
+disk in a particular data structure would require minimal changes,
+whereas in the first, if you changed the data structure backing the word
+list you'd have to change several modules.
+
 ---
 
 class: middle
 
-"We propose instead that one begins with a **list of difficult design decisions** or **design decisions which are likely to change**." (Emphasis added)
+"We propose instead that one begins with a **list of difficult design decisions** or **design decisions which are likely to change**.
+
+"Each module is then designed to **hide such a decision from the others.**" (Emphasis added)
 
 ???
 
 His point was that modules need to hide away minute implementation
-details from other modules - things that are likely to change!
+details from other modules - things that are likely to change! Where you
+draw the boundaries in your system matters, because they allow you to
+flexibly change your approach without messing with other parts of the
+system later.
 
---
-
-"Each module is then designed to hide such a decision from the others."
+Sounds obvious, right? This paper eventually got the discussion rolling
+into the design principles which we call "High Cohesion, Loose Coupling"
+today.
 
 ---
 
@@ -192,11 +214,10 @@ Where are the difficult design decisions in this company that are likely to chan
 ???
 
 Even though Parnas' paper looked at a single program and attempted to
-rethink its division of labor from flow to responsibility, we can take
-this one step further and ask ourselves - how can our systems hide the
-complexity of the decisions of each business organization from each
-other?
+rethink its division of labor from flow to responsibility, I want to
+zoom out and apply this to our entire business system.
 
+Where do those difficult design decisions come from, within our company?
 
 --
 
@@ -207,6 +228,12 @@ other?
 ## A peek into the life of our systems:
 
 * Marketing wants us to generate 5000 promo codes
+
+???
+
+If you ask me, that sounds like change! And that change seems to be
+driven by several groups from within the company, each with its own
+competing business priorities.
 
 --
 * Finance needs us to implement a new audit log
@@ -234,28 +261,52 @@ PLACEHOLDER: diagram of app folders
 
 Show app growing over time as app code drops in.
 
+???
+
+Now if you're a Rails programmer who's worked in any sort of large
+system, you know that this dance does not necessarily scale for long.
+
+We tend to spray feature code across the application codebase. I might
+need to add my feature to the User model, then add a callback to a
+controller, and then create a few service objects here and there. You
+may need to then take my User model and add a lifecycle callback to make
+your food delivery code work, and then throw your food delivery code in
+a subfolder in the services folder.
+
+At a certain point in time, there are just too many cooks in the
+kitchen, working on the same dish, you know what I mean?
+
 ---
 
 ## How do we get out of the world of the monolith?
 
 So... just do microservices?
 
+--
+
 What do I extract?
+
+How much should I plan to extract?
 
 What if I extract something that's too specific? Too generic?
 
 ???
 
-I used to work at a Rails shop that had a massive monolith.
+I used to work at a Rails shop that had a massive monolith, over 750K
+LOC, and although we knew we had to eventually move off of the old
+system, I had no idea what sort of scale the new system would have to
+have.
 
 I wished for an insight that would help me understand what exactly
-belonged where, or gave me general insights toward.
+belonged where.
 
 ---
 
 class: middle
 
-### A rule of thumb: design systems around your organizational structure!
+#### A rule of 👍🏾
+
+### Design systems around your organizational structure!
 
 Remember Conway's Law?
 
@@ -263,6 +314,9 @@ Remember Conway's Law?
 
 I want to put forth that a good rule of thumb is an organizational
 pattern that isolates business processes from others.
+
+If you remember good ol Conway's Law, your org structure ends up pushing
+out a software system that reflects it. So why fight it?
 
 ---
 
@@ -313,19 +367,7 @@ is meant to be a communal, team-wide effort.
 
 ---
 
-class: middle center
-
-## Strategic Design
-
-#### Through an exercise called Context Mapping
-
-???
-
-Everybody say "Strategic Design"
-
-We are going to go through an exercise called Context Mapping.
-
----
+class: middle
 
 ### Problem statement
 
@@ -420,6 +462,8 @@ Listen to the language, and see if the wording flows.
 Renaming concepts in code is appropriate here!
 
 ---
+
+class: middle
 
 ### Problem statement:
 
@@ -609,9 +653,18 @@ background-image: url(images/erd-2-domains.jpg)
 
 class: middle
 
-### Congrats - we've got a list of domains in our system
+## Congrats - we've got a list of domains in our system
 
 And a rough mapping of what domain models go where.
+
+---
+
+class: middle
+
+### Problem statement:
+
+Our systems bloat because we don't have the insights to understand
+where the boundaries belong
 
 ---
 
@@ -619,22 +672,11 @@ And a rough mapping of what domain models go where.
 
 Boundaries in Rails:
 
---
 1. The Rails App
-
---
 2. Classes
-
---
 3. Modules
-
---
 4. Gems
-
---
 5. Rails Engines
-
---
 6. A separate app or API
 
 ???
@@ -659,12 +701,11 @@ different concepts, and hence different Ubiqutious Languages.
 
 ## Bounded Contexts allow for precise language
 
-Your domains may use conflicting, overloaded terms with subtle nuances
-in either context.
-
-Bounded contexts allow these concrete concepts to coexist as software.
+Your domains may use conflicting, overloaded terms with subtle nuances depending on context
 
 ???
+
+Bounded contexts allow these concrete concepts to coexist as software.
 
 
 ---
@@ -774,13 +815,13 @@ background-image: url(images/erd-2-domains.jpg)
 
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain 
 
 background-image: url(images/erd-3-bounded-context-simplified.png)
 
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain
 
 background-image: url(images/erd-4-bounded-context-extended.png)
 
@@ -799,9 +840,13 @@ between systems (upstream and downstream relationships).
 
 ---
 
-PLACEHOLDER: context map directionalities
+class: middle center background-image-contain
+
+background-image: url(images/erd-5-bounded-context-extended-with-dependencies.png)
 
 ---
+
+class: middle
 
 ## You just made a Context Map!
 
@@ -820,9 +865,9 @@ We may notice a few things:
 
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain
 
-background-image: url(images/erd-4-bounded-context-extended.png)
+background-image: url(images/erd-6-bounded-context-extended-multiple-domains.png)
 
 ---
 
@@ -839,9 +884,9 @@ Note upstream vs downstream dependencies. These are communication bottlenecks.
 
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain
 
-background-image: url(images/erd-4-bounded-context-extended.png)
+background-image: url(images/erd-7-bounded-context-extended-multiple-contexts.png)
 
 ---
 
@@ -860,33 +905,15 @@ domain concepts to breathe within their own enclosed systems.
 
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain
 
 background-image: url(images/erd-5-bounded-context-ideal.png)
 
 ---
 
-class: middle
-
-## Increased cohesion!
-
-We just found the areas where code "naturally" fits together, because
-they are serving the same business goal.
-
-
-???
-
-We just found the areas where code "naturally" fits together, because
-they are serving the same business goal.
-
-We will find that these entities naturally prefer each other, since
-they live in the same organizational unit.
-
----
-
 #### Refactoring Time
 
-# Step 1: Domain-Oriented Folders
+# Domain-Oriented Modules & Folders
 
 ---
 
@@ -894,7 +921,17 @@ they live in the same organizational unit.
 
 ## Break your application into domain modules
 
+Choose one domain and make it a module.
+
+???
+
 Incremental refactoring, using Ruby Modules to lead the way!
+
+---
+
+class: middle center background-image-contain background-color-white
+
+![Extraction illustration](images/erd-8-extracting-bounded-context.png)
 
 ---
 
@@ -1004,12 +1041,6 @@ app/domains/ridesharing/trips/show.html.erb
 
 ---
 
-class: middle center background-image-contain
-
-![Cohesion illustration](images/cohesion_illustration.png)
-
----
-
 ## More advanced concept - when you have one model that needs to go two places
 
 Sometimes, you have a concept that needs to be broken up:
@@ -1042,11 +1073,23 @@ TODO
 
 ---
 
-## ActiveRecord relationships can be abused!
+#### Refactoring Time
+
+# Passing around Aggregate Roots
+
+---
+
+## The Dreaded God Object
+
+ActiveRecord relationships are easily abused.
 
 Objects start knowing too much about the entire world.
 
-"God Objects"
+---
+
+class: middle center background-image-contain background-color-white
+
+![God Object illustration](images/aggregate-root-3-god-object.png)
 
 ---
 
@@ -1066,22 +1109,22 @@ end
 
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain 
 
 background-image: url(images/aggregate-root-1.png)
 
 ---
 
-class: middle
+#### Definition! 📖
 
-## Aggregate Roots
+### Aggregate Root
 
 **Aggregate Roots** are top-level domain models that reveal an object
 graph of related entities beneath them.
 
 --
 
-Simplify the data structures we pass around - lower coupling
+Help simplify the data structures we pass around 
 
 ---
 
@@ -1188,6 +1231,12 @@ end
 ???
 
 Now in this new world, cross-domain access to a Trip is only doable from a service object that you call.
+
+---
+
+#### Refactoring
+
+# Taking advantage of events
 
 ---
 
@@ -1421,17 +1470,24 @@ stronger seams!
 
 ## Warning: Limitations apply!
 
-Don't try to do this on every project!
+**DDD** works well if:
 
---
+You're open to experimentation and have buy-in from your Product
+Owner.
+
+The whole team's open to trying it out (not a lone wolf).
+
+Other teams, too.
+
+You have a complex domain that needs linguistic precision.
+
+---
+
+## Know when to stop!
 
 I've been guilty of overdesigning.
 
---
-
 Try it out, step by step
-
---
 
 Back it out if this doesn't "fit"
 
