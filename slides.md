@@ -86,7 +86,7 @@ class: middle center background-color-code
 
 ## I've been thinking about beautiful systems
 
-In the language - elegance, syntax, form, expressiveness
+In the language - syntax, form, expressiveness
 
 --
 
@@ -113,20 +113,15 @@ system is its longevity.
 
 ## Lasting systems - what they are
 
-Flexible and easy to change, to adapt to changing biz requirements.
+Flexible and easy to change
 
 --
 
-Easily maintained - loosely coupled, and highly cohesive
+Highly cohesive and loosely coupled
 
 --
 
-Resistant to the Dreaded Rewrite
-
-???
-
-It's not throwaway, but like all systems, it's not overengineered with
-the expectation that it must last forever
+Precise semantics that fully express the business domain
 
 ---
 
@@ -367,19 +362,20 @@ Verbs - actions (a.k.a. events)
 
 #### A sample glossary
 
-Driver: [Entity] A customer equipped with a car, focusing on providing driver services
+**Driver**: [Entity] A User providing driver services. S/he typically owns a
+Vehicle.
 
 --
-<strike>Passenger</strike> Participant: [Entity] A person seeking a ride to a
-specified location.
-
---
-
- HailedDriver: [Event] A user has signaled their intent to seek out a ride.
+<strike>Passenger</strike> **Participant**: [Entity] A User seeking a ride to a
+specified [time-traveling] location.
 
 --
 
- ChargedCreditCard: [Event] A customer credit card has been charged for a transaction.
+ **HailedDriver**: [Event] A user has signaled their intent to seek out a ride.
+
+--
+
+ **ChargedCreditCard**: [Event] A customer credit card has been charged for a transaction.
 
 ???
 
@@ -396,16 +392,32 @@ continually reference in the future.
 
 ---
 
-### That's a Ubiquitous Language
+#### Definition! 📖
 
-Rename concepts in code
+### Ubiquitous Language
 
-Only applies to a context of the business
+A **Ubiquitous Language** is a shared set of concepts, terms and
+definitions between the business stakeholders and the technical staff.
 
+Use the language to drive the design of the system.
+
+--
 
 ???
 
 Now you can go and rename misnomers in the code.
+
+Only applies to a context of the business
+
+---
+
+#### Apply It! 🤖
+
+## Rename concepts in code
+
+Listen to the language, and see if the wording flows.
+
+Renaming concepts in code is appropriate here!
 
 ---
 
@@ -550,6 +562,12 @@ background-image: url(images/erd-2-domains.jpg)
 
 We did a bottom-up discovery here.
 
+--
+
+An ActiveRecord-based ERD diagram has limitations.
+
+You may have to create your own.
+
 ???
 
 Go ahead and draw your subdomains over each of the models.
@@ -597,41 +615,39 @@ And a rough mapping of what domain models go where.
 
 ---
 
-class: middle
-
-## Now let's talk boundaries
+## Now let's talk boundaries 
 
 Boundaries in Rails:
 
+--
 1. The Rails App
 
 --
-2. Gems
+2. Classes
 
 --
 3. Modules
 
 --
-4. Classes
+4. Gems
 
 --
-5. External API
+5. Rails Engines
 
 --
-6. Rails Engines
+6. A separate app or API
 
---
-7. A separate app
+???
+
+Each of these systems animate business concepts within a software system
 
 ---
 
 #### Definition! 📖
 
-### Bounded Contexts
+### Bounded Context
 
-A **Bounded Context** is:
-
-- Concretely: a software system (like a codebase)
+- Concretely: a software system (like a codebase or running application)
 - Linguistically: a delineation in your domain where concepts are "bounded", or contained
 
 ???
@@ -641,12 +657,12 @@ different concepts, and hence different Ubiqutious Languages.
 
 ---
 
-## Bounded Contexts give us linguistic clarity
+## Bounded Contexts allow for precise language
 
-Big idea: each domain (business function) has a different view of the
-world, often conflicting.
+Your domains may use conflicting, overloaded terms with subtle nuances
+in either context.
 
-Bounded contexts allow these concepts to coexist.
+Bounded contexts allow these concrete concepts to coexist as software.
 
 ???
 
@@ -655,29 +671,27 @@ Bounded contexts allow these concepts to coexist.
 
 ## Overloaded concept: Trip Time
 
-Financial Transaction Context: Trip time is calculated from **vehicle moving time (minutes)**
+**Financial Transaction Context**: Trip time is calculated from *vehicle moving time (minutes)*
 
-Routing Context: Trip time is calculated from **total passenger
-minutes**
+**Routing Context**: Trip time is calculated from *total passenger
+minutes, including stopped time*
 
 --
 
-Note that these concepts share the same name, but have nuanced
-behaviors based on context!
+#### Concepts share the same name, but have nuanced behaviors based on context!
 
 ---
 
 ## Overloaded concept: Trip Cost
 
-Financial Transaction Context: How much $ the customer pays
-(dollars)
+**Financial Transaction Context**: *How much $ the customer pays
+(dollars)*
 
-Routing Context: Trip efficiency (miles moving time / time in car)
+**Routing Context**: *Trip efficiency (scalar coefficient)*
 
 --
 
-Note that these concepts share the same name, but are wildly
-different!
+#### Concepts share the same name, but are wildly different!
 
 ---
 
@@ -717,18 +731,23 @@ systems, but we won't elucidate upon it too much here.
 
 ---
 
-## Bounded Contexts are software systems
+## How could we fix it?
 
-We mean that they are real software systems that encode real concepts in code.
+We could introduce another bounded context - another module or system -
+for each domain, in which the notion of a Trip can conform to its proper
+definition in that domain.
 
 ---
 
-## Bounded Contexts are linguistic boundaries
+## Bounded Contexts
 
-Bounded Contexts limit the *applicability* of each model, term, or idea.
+Bounded Contexts may not live up to their full promise in your system
+yet. Don't worry.
 
 You won't have all the Bounded Contexts you need at the moment, but
 that's an ideal world we'll drive toward.
+
+???
 
 
 ---
@@ -862,6 +881,12 @@ they are serving the same business goal.
 
 We will find that these entities naturally prefer each other, since
 they live in the same organizational unit.
+
+---
+
+#### Refactoring Time
+
+# Step 1: Domain-Oriented Folders
 
 ---
 
@@ -1056,7 +1081,7 @@ graph of related entities beneath them.
 
 --
 
-Can be considered a **Facade**
+Simplify the data structures we pass around - lower coupling
 
 ---
 
