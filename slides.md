@@ -80,7 +80,7 @@ Friendly neighborhood programmer at Carbon Five
 
 class: middle center background-color-code
 
-<img src="http://www.carbonfive.com/images/c5-logo-vertical.png" alt="Carbon Five" height="20%" />
+<img src="http://www.carbonfive.com/images/c5-logo-vertical.png" alt="Carbon Five" height="200" />
 
 ---
 
@@ -353,7 +353,7 @@ class:
 
 --
 
-🛠 Do a little bit of **refactoring**
+🛠 Apply some **refactoring steps** to our codebase
 
 ???
 
@@ -371,8 +371,8 @@ class: middle
 
 ### Problem statement
 
-Systems too often become unmaintainable because there
-are imprecise, lazy names between code and the business.
+Systems become unmaintainable because there
+are imprecise and inconsistent names between code and the business.
 
 ---
 
@@ -443,8 +443,6 @@ definitions between the business stakeholders and the technical staff.
 
 Use the language to drive the design of the system.
 
---
-
 ???
 
 Now you can go and rename misnomers in the code.
@@ -460,6 +458,10 @@ Only applies to a context of the business
 Listen to the language, and see if the wording flows.
 
 Renaming concepts in code is appropriate here!
+
+--
+
+`user.request_trip` ➡️ `passenger.hail_driver`
 
 ---
 
@@ -707,6 +709,21 @@ Your domains may use conflicting, overloaded terms with subtle nuances depending
 
 Bounded contexts allow these concrete concepts to coexist as software.
 
+---
+
+class: background-color-code middle
+
+```ruby
+class Trip
+  def time
+    # ...
+  end
+
+  def cost
+    # ...
+  end
+end
+```
 
 ---
 
@@ -741,14 +758,14 @@ class: background-color-code
 ```ruby
 # Overloaded concepts!
 class Trip
+  def time
+    # Routing: total clock minutes
+    # Financial: moving minutes
+  end
+
   def cost
     # Routing: Routing AI subsystem efficiency metric
     # Financial: $$$ metric
-  end
-
-  def elapsed_time
-    # Routing: total clock minutes
-    # Financial: moving minutes
   end
 end
 ```
@@ -770,6 +787,26 @@ linguistic drivers to develop these systems even further.
 Anyways, that's more reason to split up our system into multiple
 systems, but we won't elucidate upon it too much here.
 
+---
+
+class: background-color-code
+
+```ruby
+# A little workaround?
+class Trip
+  def elapsed_time
+  end
+
+  def moving_time
+  end
+
+  def routing_efficiency_cost
+  end
+
+  def money_cost
+  end
+end
+```
 ---
 
 ## How could we fix it?
@@ -1041,38 +1078,6 @@ app/domains/ridesharing/trips/show.html.erb
 
 ---
 
-## More advanced concept - when you have one model that needs to go two places
-
-Sometimes, you have a concept that needs to be broken up:
-
----
-
-class: background-color-code
-
-```ruby
-module Ridesharing
-  class Trip < ActiveRecord::Base
-    def cost; end
-    def length; end
-  end
-end
-
-module FinancialTransaction
-  class Trip < ActiveRecord::Base
-    def cost; end
-    def length; end
-  end
-end
-```
-
-???
-
-What do you do with a model that needs to go two ways?
-
-TODO
-
----
-
 #### Refactoring Time
 
 # Passing around Aggregate Roots
@@ -1234,17 +1239,45 @@ Now in this new world, cross-domain access to a Trip is only doable from a servi
 
 ---
 
-#### Refactoring
+#### Refactoring Time
 
 # Taking advantage of events
 
 ---
 
+class: middle background-color-code
+
+```ruby
+# Old way
+module Ridesharing
+  class TripController
+    def create
+      trip = do_something_to_create_trip(params)
+      # Uh oh, this isn't a Ridesharing concern
+      ReallySpecificGoogleAnalyticsThing
+        .tag_manager_logging('custom_event_name',
+                             ENV['GA_ID'],
+                             trip)
+    end
+  end
+end
+```
+
+---
+
+class: middle center background-image-contain
+
+background-image: url(images/events-1.png)
+
+---
+
 class: middle
 
-## Decrease coupling by publishing events for async dependencies
+## Publish events if you need to do something in another domain
 
-Domains that only need unidirectional data flow work well here!
+Flip data dependency and instead broadcast that you did something.
+
+This lowers coupling between our domains!
 
 ???
 
@@ -1260,104 +1293,113 @@ off of an asynchronous processing system that we already have - Sidekiq.
 
 ---
 
-class: middle
-
-## Just send an event notifying the outside world!
-
-Instead of needing to know about the outside world, we simply
-publish an event.
-
----
-
-class: middle background-color-code
+class: background-color-code middle
 
 ```ruby
-# Old way
-class TripController
-  def create
-    # ...
-    ReallySpecificGoogleAnalyticsThing
-      .tag_manager_logging('trip_created',
-                           ENV['GA_ID'],
-                           trip)
-  end
-end
-```
-
----
-
-class: middle background-color-code
-
-```ruby
-class TripController
-  def create
-    # ...
-    DomainEventPublisher.new
-      .call(:trip_created, trip.id)
-  end
-end
-```
-
----
-
-## Introducing Rails events via the wisper gem
-
-```ruby
+# Introducing... a Domain Event Publisher
 class DomainEventPublisher
-  include Wisper::Broadcaster
+  include Wisper::Publisher
 
   def call(event_name, *event_params)
-    publish(event_name, *event_params)
+    # Wisper then invokes registered subscriber
+    # code at this point
+    broadcast(event_name, *event_params)
   end
 end
 ```
 
 ---
 
-## Every bounded context has its own event management system
+class: middle background-color-code
+
+```ruby
+module Ridesharing
+  class TripController
+    def create
+      trip = do_something_to_create_trip(params)
+
+      # Here, we fire an event, but don't care
+      # what actually happens next
+      DomainEventPublisher.new
+        .call(:trip_created, trip.id)
+    end
+  end
+end
+```
+
+---
+
+## Every bounded context has its own event handler
 
 Now we add an event handler for each domain, so it knows how
 to handle incoming events.
 
-Anti-corruption layer. Each incoming event that this domain must respond
-to will be subscribed to here, and dispatched accordingly.
+This handler will then dispatch the relevant side effects for each
+event, through a Command object.
 
 ---
 
 class: background-color-code
 
 ```ruby
+# Handles relevant domain events. Dispatches to
+# Command objects that perform side effects.
 module Analytics
-  class CommandDispatcher
-    include Wisper::Subscriber
+  class DomainEventHandler
 
-    # Method name is invoked based on the name of the message.
-    # So this method is invoked in response to the `trip_created` event.
-    def trip_created(params)
-      # handle the action here, delegate out to a service object.
+    # Method name is invoked based on the name of the
+    # message. This method is invoked in response to
+    # the `trip_created` event.
+    def self.trip_created(params)
+      # handle the action here, delegate out to a
+      # service/command.
       LogTripCreated.new.call(params)
     end
   end
 end
 ```
+
+???
+
+A few things to note here - this class is wired up
+
+---
+
+class: background-color-code middle
+
+```ruby
+# Hook up the handler (with a subscription) to
+# the DomainEventPublisher
+
+# config/inititalizers/domain_events.rb
+Wisper.subscribe(Analytics::DomainEventHandler,
+    scope: :DomainEventPublisher)
+```
+
 ---
 
 class: background-color-code
 
 ```ruby
-# And now, we can encapsulate the logging concerns
-# for trip creation in a service
+# Meanwhile back in the Analytics domain, we
+# wrap the specific GA call in a Command/service object.
 module Analytics
   class LogTripCreated
-    def call
+    def call(params)
       ReallySpecificGoogleAnalyticsThing
-        .tag_manager_logging('trip_created',
-                             ENV['GA_ID'],
-                             trip)
+        .fire_event('custom_event_name',
+                    ENV['GA_ID'],
+                    params['trip'])
     end
   end
 end
 ```
+
+???
+
+Let's start first by introducing a Command object, which is really just
+a very slim service. Its purpose is to be invoked from the dispatch
+mechanism in the handler, which we'll see next.
 
 ---
 
@@ -1367,10 +1409,8 @@ class: background-color-code
 # Different domains can opt to subscribe to the same
 # events!
 module FinancialTransaction
-  class CommandDispatcher
-    include Wisper::Subscriber
-
-    def trip_created(params)
+  class DomainEventHandler
+    def self.trip_created(params)
       CreateTaxAuditLogEntry.new.call(params)
       DeductGiftCardAmount.new.call(params)
     end
@@ -1380,29 +1420,49 @@ end
 
 ---
 
-### Think event-driven if
+class: middle center background-image-contain
 
-* You don't have to manage rollbacks, transactional consistency
-* Your downstream systems can accept eventually consistent data
+background-image: url(images/events-2.png)
 
 ---
 
-### Now make it truly asynchronous with -- Sidekiq!
+### Try event-driven if:
 
-Wisper can hook into Sidekiq to truly process your events
+* You don't have to manage transactions, rollbacks
+* Your system's data integrity requirements allow you to be eventually consistent.
+* You can ensure durability of messages across the system.
+
+---
+
+### Now make it truly asynchronous with ActiveJob!
+
+This has been synchronous so far - everything happens within the same
+web request thread.
+
+Wisper can hook into ActiveJob to truly process your events
 asynchronously in a worker queue.
 
+Everything after `publish` now is processed by a worker!
+
 ---
 
-### Or, you can build this yourself with a true MQ system
+### Using a message queue
 
-Shoutout: Stitch Fix's [Pwwka]() is an excellent job queueing system.
+Instead of using Wisper, publish a RabbitMQ event!
+
+Each domain's event handlers are run as subscribers to an exchange topic.
+
+Stitch Fix's [Pwwka](https://github.com/stitchfix/pwwka) is an excellent RabbitMQ message queue implementation. You can also use [Sneakers](http://jondot.github.io/sneakers/).
 
 ---
 
 ### A true event-driven model can be taken even further
 
-See: Event Sourcing, Event Storming, Event Store
+See:
+
+* Event Sourcing architecture
+* Event Store (event-oriented database)
+* Event Storming (brainstorming activity)
 
 ???
 
@@ -1412,49 +1472,51 @@ and can be hard to implement.
 
 ---
 
-## Conway's Law and DDD
+class: middle
 
-Conway's Law, paraphrased: "Software systems tend to look like the
-organizations that produce them"
+# Advanced topics
 
---
+---
 
-DDD modeling oftentimes reveals domains that follow organizational
-layouts.
+## When you have one model that needs to go two places
 
-Your software systems follow organizational optimizations.
+Sometimes, you have a concept that needs to be broken up:
 
---
+---
 
-Thus this is a very natural place to draw a seam!
+class: background-color-code
+
+```ruby
+module Ridesharing
+  class Trip < ActiveRecord::Base
+    def cost; end
+    def length; end
+  end
+end
+
+module FinancialTransaction
+  class Trip < ActiveRecord::Base
+    def cost; end
+    def length; end
+  end
+end
+```
 
 ???
 
-The organization has optimized for communication within itself,
-and has likely reduced its dependencies on other organizational units.
+What do you do with a model that needs to go two ways?
+
+TODO
 
 ---
 
-## Cohesion as a factor of business change
+class: middle
 
-The Context Map helps you understand where change is most likely to
-cluster - from the business functions that drive them.
-
-Thus, we organize our code anticipating such change together.
+# Where Next?
 
 ---
 
-## Systems thinking
-
-Systems thinking is a process tool that forces us to think about our
-systems as living, breathing organisms.
-
-Systems built to last will take those factors into account - identifying
-work producers, minimizing waste, increasing efficiencies, localising and clustering work.
-
----
-
-## The evolution of this localised change...
+## Progressive refactoring
 
 1. Domain-oriented folders, to...
 2. Rails engines, to...
@@ -1464,7 +1526,9 @@ work producers, minimizing waste, increasing efficiencies, localising and cluste
 Each of these evolutions is simply modeling a bounded context with
 stronger seams!
 
-"Component-Based Rails Applications" by Stephan Hagemann
+???
+
+I recommend you read "Component-Based Rails Applications" by Stephan Hagemann
 
 ---
 
@@ -1472,42 +1536,32 @@ stronger seams!
 
 **DDD** works well if:
 
-You're open to experimentation and have buy-in from your Product
+* You have a complex domain that needs linguistic precision.
+* You're open to experimentation and have buy-in from your Product
 Owner.
-
-The whole team's open to trying it out (not a lone wolf).
-
-Other teams, too.
-
-You have a complex domain that needs linguistic precision.
+* The whole team's open to trying it out (not a lone wolf).
+* Other teams, too.
 
 ---
 
 ## Know when to stop!
 
-I've been guilty of overdesigning.
+How do we know if we've overdesigned?
 
-Try it out, step by step
+If the weight of maintaining abstractions is too heavy of a burden.
 
-Back it out if this doesn't "fit"
+--
+
+Don't pressure yourself to follow DDD patterns "by the book".
+
+Back it out if it doesn't fit.
 
 ???
 
-Here's what you can do: spike it out.
-See how it feels and fits. Back it out if it doesn't work for you.
+The authors will actually tell you that it's less about the patterns than it
+is about listening to the domain language.
 
----
-
-class: middle
-
-## What we did tonight
-
-👓 **Visualized our system** with a Context Map
-
-✏️   **Drew boundaries** in our code!
-
-🛠 Do a little bit of **refactoring** with domain modules, Aggregate
-Roots and Domain Events.
+Try it out, step by step. Back it out if this doesn't "fit"
 
 ---
 
