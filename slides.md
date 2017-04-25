@@ -1,8 +1,16 @@
 class: middle
 
+&nbsp;
+
 # Built to Last
 
 #### A domain-driven approach to beautiful systems
+
+Andrew Hao<br />
+andrew@carbonfive.com
+
+
+<img src="images/c5-logo-white.png" alt="Carbon Five" style="float: right; margin-bottom: 10px;" height="150" />
 
 ---
 
@@ -255,16 +263,46 @@ competing business priorities.
 
 ---
 
-## The landscape of Rails code:
+class: middle center background-image-contain
 
-PLACEHOLDER: diagram of app folders
-
-Show app growing over time as app code drops in.
+background-image: url(images/rails-topology-1.svg)
 
 ???
 
 Now if you're a Rails programmer who's worked in any sort of large
 system, you know that this dance does not necessarily scale for long.
+
+---
+
+class: middle center background-image-contain
+
+background-image: url(images/rails-topology-2.svg)
+
+---
+
+class: middle center background-image-contain
+
+background-image: url(images/rails-topology-3.svg)
+
+---
+
+class: middle center background-image-contain
+
+background-image: url(images/rails-topology-4.svg)
+
+---
+
+class: middle center background-image-contain
+
+background-image: url(images/rails-topology-messy.svg)
+
+---
+
+## The landscape of Rails code:
+
+Horizontal decomposition of code into folders
+
+???
 
 We tend to spray feature code across the application codebase. I might
 need to add my feature to the User model, then add a callback to a
@@ -394,7 +432,7 @@ Verbs - actions (a.k.a. events)
 Vehicle.
 
 --
-<strike>Passenger</strike> **Participant**: [Entity] A User seeking a ride to a
+<strike>Rider</strike> **Passenger**: [Entity] A User seeking a ride to a
 specified [time-traveling] location.
 
 --
@@ -624,15 +662,15 @@ where the boundaries belong
 
 ---
 
-## Now let's talk boundaries 
+## Now let's talk boundaries
 
 Boundaries in Rails:
 
-1. The Rails App
-2. Classes
-3. Modules
-4. Gems
-5. Rails Engines
+1. Classes
+2. Modules
+3. Gems
+4. Rails Engines
+5. The Rails App
 6. A separate app or API
 
 ???
@@ -806,7 +844,7 @@ background-image: url(images/erd-2-domains.jpg)
 
 ---
 
-class: middle center background-image-contain 
+class: middle center background-image-contain
 
 background-image: url(images/erd-3-bounded-context-simplified.png)
 
@@ -972,12 +1010,6 @@ its own module directory.
 
 ---
 
-class: middle
-
-#### Find references to newly modulized classes and change them.
-
----
-
 class: middle background-color-code
 
 ```ruby
@@ -1081,13 +1113,9 @@ background-image: url(images/aggregate-root-1.png)
 **Aggregate Roots** are top-level domain models that reveal an object
 graph of related entities beneath them.
 
---
-
-Help simplify the data structures we pass around 
-
 ---
 
-class: middle center background-image-contain background-white
+class: middle center background-image-contain
 
 background-image: url(images/aggregate-root-2.png)
 
@@ -1143,7 +1171,7 @@ module Ridesharing
     def call(id)
       Trip
         .includes(:passenger,
-                  :trip, ...)
+                  :driver, ...)
         .find(id)
       # Alternatively, return something non-AR
       # OpenStruct.new(trip: Trip.find(id), ...)
@@ -1325,7 +1353,7 @@ class: background-color-code middle
 # Hook up the handler (with a subscription) to
 # the DomainEventPublisher
 
-# config/inititalizers/domain_events.rb
+# config/initializers/domain_events.rb
 Wisper.subscribe(Analytics::DomainEventHandler,
     scope: :DomainEventPublisher)
 ```
@@ -1380,14 +1408,6 @@ background-image: url(images/events-2.png)
 
 ---
 
-### Try event-driven if:
-
-* You don't have to manage transactions, rollbacks
-* Your system's data integrity requirements allow you to be eventually consistent.
-* You can ensure durability of messages across the system.
-
----
-
 ### Now make it truly asynchronous with ActiveJob!
 
 This has been synchronous so far - everything happens within the same
@@ -1400,6 +1420,27 @@ Everything after `publish` now is processed by a worker!
 
 ---
 
+class: background-color-code middle
+
+```ruby
+# Gemfile
+gem 'wisper-activejob'
+
+# config/initializers/domain_events.rb
+Wisper.subscribe(Analytics::DomainEventHandler,
+    scope: :DomainEventPublisher, async: true)
+```
+
+---
+
+### Try event-driven if:
+
+* Your system's data integrity requirements allow you to be eventually consistent.
+* You don't have to manage transactions, rollbacks
+* You can ensure durability of messages across the system.
+
+---
+
 ### Using a message queue
 
 Instead of using Wisper, publish a RabbitMQ event!
@@ -1407,6 +1448,12 @@ Instead of using Wisper, publish a RabbitMQ event!
 Each domain's event handlers are run as subscribers to an exchange topic.
 
 Stitch Fix's [Pwwka](https://github.com/stitchfix/pwwka) is an excellent RabbitMQ message queue implementation. You can also use [Sneakers](http://jondot.github.io/sneakers/).
+
+???
+
+Now, I can replace the backend of my DomainEventPublisher with a
+RabbitMQ message queue! This allows me to actually send events that I
+can then extract to an external system.
 
 ---
 
@@ -1432,35 +1479,74 @@ class: middle
 
 ---
 
+## Sharing entities between contexts
+
+**Shared Kernel** - namespace shared models in a common module or namespace:
+
+`User` ➡️ `Common::User`
+
+--
+
+This can later be packaged up in a gem, or slowly extracted
+
+---
+
 ## When you have one model that needs to go two places
 
-Sometimes, you have a concept that needs to be broken up:
+Sometimes, you have a concept that needs to be broken up. How can we get
+these concepts duplicated in different domains?
+
+Concept: **Anti-Corruption Layer**
 
 ---
 
 class: background-color-code
 
 ```ruby
-module Ridesharing
-  class Trip < ActiveRecord::Base
-    def cost; end
-    def length; end
+module Routing
+  class Trip < Struct.new(:cost, :time)
+    # Nice, expressive domain model
   end
-end
 
-module FinancialTransaction
-  class Trip < ActiveRecord::Base
-    def cost; end
-    def length; end
+  class TripRepository
+    def self.find_by!(*params)
+      external_trip = ::Common::Trip.find_by!(*params)
+      mapped_attrs = mapping_from(external_trip)
+      Trip.new(mapped_attrs[:cost], mapped_attrs[:time])
+    end
+
+    def self.mapping_from(external_trip)
+      { cost: external_trip.routing_efficiency_cost,
+        time: external_trip.elapsed_time }
+    end
   end
 end
 ```
 
-???
+---
 
-What do you do with a model that needs to go two ways?
+class: background-color-code
 
-TODO
+```ruby
+module FinancialTransaction
+  class Trip < Struct.new(:cost, :time)
+    # Nice, expressive domain model
+  end
+
+  class TripRepository
+    def self.find_by!(*params)
+      external_trip = ::Common::Trip.find_by!(*params)
+      mapped_attrs = mapping_from(external_trip)
+      Trip.new(mapped_attrs[:cost], mapped_attrs[:time])
+    end
+
+    def self.mapping_from(external_trip)
+      { cost: external_trip.money_cost,
+        time: external_trip.moving_time }
+    end
+  end
+end
+```
 
 ---
 
