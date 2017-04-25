@@ -298,24 +298,6 @@ background-image: url(images/rails-topology-messy.svg)
 
 ---
 
-## The landscape of Rails code:
-
-Horizontal decomposition of code into folders
-
-???
-
-We tend to spray feature code across the application codebase. I might
-need to add my feature to the User model, then add a callback to a
-controller, and then create a few service objects here and there. You
-may need to then take my User model and add a lifecycle callback to make
-your food delivery code work, and then throw your food delivery code in
-a subfolder in the services folder.
-
-At a certain point in time, there are just too many cooks in the
-kitchen, working on the same dish, you know what I mean?
-
----
-
 ## How do we get out of the world of the monolith?
 
 Microservices sound hard!
@@ -361,42 +343,20 @@ enterprise-speak.
 
 ---
 
-class: 
+#### Definition! 📖
 
-## Our goals today
+### Ubiquitous Language
 
-📖 **Develop a shared vocabulary** with our business partners
+A **Ubiquitous Language** is a shared set of concepts, terms and
+definitions between the business stakeholders and the technical staff.
 
---
-
-👓 **Visualize our system** from a domain perspective
-
---
-
-✏️ **Discover the hidden boundaries** in our system(s)
-
---
-
-🛠 **Refactor & reorient** parts of the system by domain contexts
+Use the language to drive the design of the system.
 
 ???
 
-We'll learn to see the software from the business domain perspective
+Now you can go and rename misnomers in the code.
 
-Visualization is important: you can't improve what you can't see!
-
-This is a team exercise! If you're doing any of these alone by yourself
-because you're the Lead, or the Architect, you're doing this wrong. This
-is meant to be a communal, team-wide effort.
-
----
-
-class: middle
-
-### Problem statement
-
-Systems become unmaintainable because there
-are imprecise and inconsistent names between code and the business.
+Only applies to a context of the business
 
 ---
 
@@ -455,23 +415,6 @@ people to onboard quickly and get used to what your team does.
 
 Now put this up on a wall, or on a wiki! Somewhere where the team can
 continually reference in the future.
-
----
-
-#### Definition! 📖
-
-### Ubiquitous Language
-
-A **Ubiquitous Language** is a shared set of concepts, terms and
-definitions between the business stakeholders and the technical staff.
-
-Use the language to drive the design of the system.
-
-???
-
-Now you can go and rename misnomers in the code.
-
-Only applies to a context of the business
 
 ---
 
