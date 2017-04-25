@@ -78,9 +78,9 @@ Friendly neighborhood programmer at Carbon Five
 
 ---
 
-class: middle center background-color-code
+class: middle center background-color-carbonfive
 
-<img src="http://www.carbonfive.com/images/c5-logo-vertical.png" alt="Carbon Five" height="200" />
+<img src="images/c5-logo-white.png" alt="Carbon Five" height="350" />
 
 ---
 
@@ -280,15 +280,19 @@ kitchen, working on the same dish, you know what I mean?
 
 ## How do we get out of the world of the monolith?
 
-So... just do microservices?
+Microservices sound hard!
 
 --
 
-What do I extract?
-
 How much should I plan to extract?
 
+--
+
 What if I extract something that's too specific? Too generic?
+
+--
+
+If only there were something to help me visualize what I need...
 
 ???
 
@@ -304,29 +308,11 @@ belonged where.
 
 class: middle
 
-#### A rule of 👍🏾
-
-### Design systems around your organizational structure!
-
-Remember Conway's Law?
-
-???
-
-I want to put forth that a good rule of thumb is an organizational
-pattern that isolates business processes from others.
-
-If you remember good ol Conway's Law, your org structure ends up pushing
-out a software system that reflects it. So why fight it?
-
----
-
-class: middle
-
 ## Introducing Domain-Driven Design
 
 DDD is both a set of high-level design activities and specific software patterns
 
-PLACEHOLDER: book image
+<img alt="Domain-Driven Design Book Cover" src="images/ddd-book-cover.jpg" height="300" style="float: right" />
 
 ???
 
@@ -353,7 +339,7 @@ class:
 
 --
 
-🛠 Apply some **refactoring steps** to our codebase
+🛠 **Refactor & reorient** parts of the system by domain contexts
 
 ???
 
@@ -602,19 +588,11 @@ class: middle center background-image-contain background-white
 
 background-image: url(images/erd-2-domains.jpg)
 
----
-
-## Top-down or bottom-up?
-
-We did a bottom-up discovery here.
-
---
+???
 
 An ActiveRecord-based ERD diagram has limitations.
 
 You may have to create your own.
-
-???
 
 Go ahead and draw your subdomains over each of the models.
 
@@ -626,30 +604,6 @@ Top down:
 If you already know what your business subdomains do, you can
 attempt to overlay your subdomains over the diagram, or even make sticky
 note diagrams over them.
-
-Bottom-up context mapping:
-
-Looking at our ERD diagram, we allow groupings and patterns guide us to
-the invisible markers and lines between domains in our systems.
-
-You may even see some domains you haven't thought of before!
-
-In a bottom-up manner of context mapping, we are going to allow the
-diagram to guide us to these invisible groupings. We should see some
-clusters of models - these are places to stop and dig into and ask
-ourselves, "what business function does this relate to"?
-
----
-
-class: middle center background-image-contain background-white
-
-background-image: url(images/erd.png)
-
----
-
-class: middle center background-image-contain background-white
-
-background-image: url(images/erd-2-domains.jpg)
 
 ---
 
@@ -1532,7 +1486,7 @@ I recommend you read "Component-Based Rails Applications" by Stephan Hagemann
 
 ---
 
-## Warning: Limitations apply!
+## This may work for you if...
 
 **DDD** works well if:
 
@@ -1546,15 +1500,15 @@ Owner.
 
 ## Know when to stop!
 
-How do we know if we've overdesigned?
+Consider backing out if:
 
-If the weight of maintaining abstractions is too heavy of a burden.
+* You're getting that feeling of Overdesign™
+* The weight of maintaining abstractions is a heavy burden
+* Other teams unhappy or lost
 
 --
 
 Don't pressure yourself to follow DDD patterns "by the book".
-
-Back it out if it doesn't fit.
 
 ???
 
@@ -1567,27 +1521,21 @@ Try it out, step by step. Back it out if this doesn't "fit"
 
 class: middle
 
-Sample code: [https://www.github.com/andrewhao/delorean](https://www.github.com/andrewhao/delorean)
-
----
-
-class: middle
-
 ## Thanks!
 
-Github: [andrewhao](https://www.github.com/andrewhao)
+👾 Github: [andrewhao](https://www.github.com/andrewhao)
 
-Twitter: [@andrewhao](https://www.twitter.com/andrewhao)
+🐦 Twitter: [@andrewhao](https://www.twitter.com/andrewhao)
 
-Email: [andrew@carbonfive.com](mailto:andrew@carbonfive.com)
+📬 Email: [andrew@carbonfive.com](mailto:andrew@carbonfive.com)
 
 ---
 
-## Prior Art
+#### Credits & Prior Art
 
-* W. P. Stevens ; G. J. Myers ; L. L. Constantine. ["Structured Design"](http://ieeexplore.ieee.org/document/5388187/) - IBM Systems Journal, Vol 13 Issue 2, 1974
-* Evans, Eric. [Domain Driven Design](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215)
-* Vernon, Vaughan. [Implementing Domain-Driven Design](https://www.amazon.com/Implementing-Domain-Driven-Design-Vaughn-Vernon/dp/0321834577)
-* http://www.win.tue.nl/~wstomv/quotes/structured-design.html#6
-* https://www.infoq.com/articles/ddd-contextmapping
-* http://gorodinski.com/blog/2013/04/29/sub-domains-and-bounded-contexts-in-domain-driven-design-ddd/
+* Evans, Eric. [Domain-Driven Design: Tackling Complexity in the Heart of Software](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215).
+* Gorodinski, Lev. ["Sub-domains and Bounded Contexts in Domain-Driven Design (DDD)"](http://gorodinski.com/blog/2013/04/29/sub-domains-and-bounded-contexts-in-domain-driven-design-ddd/).
+* Hagemann, Stephan. [Component-Based Rails Applications](https://leanpub.com/cbra).
+* Parnas, D.L. ["On the Criteria To Be Used in Decomposing Systems into Modules"](http://www.cs.umd.edu/class/spring2003/cmsc838p/Design/criteria.pdf).
+* Vernon, Vaughan. [Implementing Domain-Driven Design](https://www.amazon.com/Implementing-Domain-Driven-Design-Vaughn-Vernon/dp/0321834577).
+* W. P. Stevens ; G. J. Myers ; L. L. Constantine. ["Structured Design"](http://ieeexplore.ieee.org/document/5388187/) - IBM Systems Journal, Vol 13 Issue 2, 1974.

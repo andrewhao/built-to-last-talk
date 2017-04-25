@@ -51,8 +51,8 @@
       .remark-slide-content.background-color-code {
         background-color: #fdf6e3
       }
-      .remark-slide-content.background-color-delorean {
-        /*background-color: #FF900A;*/
+      .remark-slide-content.background-color-carbonfive {
+        background-color: #404040;
       }
       .remark-slide-content p {
         font-size: 1.15em;
@@ -112,7 +112,11 @@
     </script>
     <script>
 var slideshow = remark.create({
-  ratio: '16:10',
+  ratio: '16:9',
+  navigation: {
+    scroll: false,
+  },
+  countIncrementalSlides: false,
   sourceUrl: 'slides.md',
   highlightStyle: 'solarized-light'
 });
