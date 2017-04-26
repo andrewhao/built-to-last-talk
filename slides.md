@@ -316,8 +316,8 @@ If only there were something to help me visualize what I need...
 
 ???
 
-I used to work at a Rails shop that had a massive monolith, over 750K
-LOC, and although we knew we had to eventually move off of the old
+I used to work at a Rails shop that had a massive monolith, 
+and although we knew we had to eventually move off of the old
 system, I had no idea what sort of scale the new system would have to
 have.
 
@@ -326,20 +326,39 @@ belonged where.
 
 ---
 
+class: middle center
+
+<img alt="Domain-Driven Design Book Cover" src="images/ddd-book-cover.jpg" />
+
+???
+
+Well in 2003, author Eric Evans came out with a book, Domain-Driven
+Design.
+
+---
+
 class: middle
 
 ## Introducing Domain-Driven Design
 
-DDD is both a set of high-level design activities and specific software patterns
+Published by Eric Evans in 2003
 
-<img alt="Domain-Driven Design Book Cover" src="images/ddd-book-cover.jpg" height="300" style="float: right" />
+DDD is both a set of high-level strategic design activities and concrete software patterns
 
 ???
 
-First came out as a book in 2003: Domain Driven Design by Eric Evans.
-
 It can be very confusing as it's got a lot of concepts and
-enterprise-speak.
+enterprise-speak. Today, we're going to pick and choose a few specific
+activities and patterns to outline and apply here to Delorean
+
+---
+
+## Today:
+
+We will build a **Context Map** and use it to introduce DDD concepts
+
+We will learn some **refactoring patterns** we can use to shape our
+systems.
 
 ---
 
@@ -429,15 +448,6 @@ Renaming concepts in code is appropriate here!
 --
 
 `user.request_trip` ➡️ `passenger.hail_driver`
-
----
-
-class: middle
-
-### Problem statement:
-
-We often don't know how to refactor our systems
-because we lack a high-level view of it.
 
 ---
 
@@ -596,15 +606,6 @@ And a rough mapping of what domain models go where.
 
 ---
 
-class: middle
-
-### Problem statement:
-
-Our systems bloat because we don't have the insights to understand
-where the boundaries belong
-
----
-
 ## Now let's talk boundaries
 
 Boundaries in Rails:
@@ -638,11 +639,11 @@ different concepts, and hence different Ubiqutious Languages.
 
 ## Bounded Contexts allow for precise language
 
-Your domains may use conflicting, overloaded terms with subtle nuances depending on context
+Your domains may use conflicting, overloaded terms with nuances depending on context
 
-???
+--
 
-Bounded contexts allow these concrete concepts to coexist as software.
+Bounded contexts allow these conflicting concepts to coexist
 
 ---
 
@@ -651,11 +652,11 @@ class: background-color-code middle
 ```ruby
 class Trip
   def time
-    # ...
+    # here be dragons...
   end
 
   def cost
-    # ...
+    # here be dragons...
   end
 end
 ```
@@ -746,22 +747,11 @@ end
 
 ## How could we fix it?
 
-We could introduce another bounded context - another module or system -
-for each domain, in which the notion of a Trip can conform to its proper
-definition in that domain.
+In DDD, we would introduce two **Bounded Contexts**:
+  * one for the **Financial Transaction** `Trip`
+  * another for the **Routing** `Trip`
 
----
-
-## Bounded Contexts
-
-Bounded Contexts may not live up to their full promise in your system
-yet. Don't worry.
-
-You won't have all the Bounded Contexts you need at the moment, but
-that's an ideal world we'll drive toward.
-
-???
-
+These Trips can now coexist within their own software boundaries, with all their linguistic nuances intact!
 
 ---
 
@@ -1400,23 +1390,9 @@ can then extract to an external system.
 
 ---
 
-### A true event-driven model can be taken even further
-
-See:
-
-* Event Sourcing architecture
-* Event Store (event-oriented database)
-* Event Storming (brainstorming activity)
-
-???
-
-We won't go into these models, but they can help systems scale cleanly.
-But they also require a very large overhaul of your existing data model
-and can be hard to implement.
-
----
-
 class: middle
+
+#### Moving beyond the basics
 
 # Advanced topics
 
@@ -1430,7 +1406,7 @@ class: middle
 
 --
 
-This can later be packaged up in a gem, or slowly extracted
+This can later be packaged up in a gem if your systems are spread out
 
 ---
 
@@ -1440,6 +1416,11 @@ Sometimes, you have a concept that needs to be broken up. How can we get
 these concepts duplicated in different domains?
 
 Concept: **Anti-Corruption Layer**
+
+--
+
+We will introduce a notion of an `Adapter` that maps an external concept
+to our internal concept.
 
 ---
 
@@ -1494,6 +1475,8 @@ end
 ---
 
 class: middle
+
+#### Toward the future
 
 # Where Next?
 
