@@ -7,10 +7,10 @@ class: middle
 #### A domain-driven approach to beautiful systems
 
 Andrew Hao<br />
-andrew@carbonfive.com
+@andrewhao
 
 
-<img src="images/c5-logo-white.png" alt="Carbon Five" style="float: right; margin-bottom: 10px;" height="150" />
+<img src="images/c5-logo-white.png" alt="Carbon Five" style="float: right; margin-top: -20px;" height="150" />
 
 ---
 
@@ -548,8 +548,6 @@ dedicated engineering staff.
 
 ---
 
-class: middle
-
 #### Apply It! 🤖
 
 ## Discover the domains on your diagram
@@ -985,7 +983,9 @@ end
 
 ---
 
-## Creating domain-oriented folders
+#### Apply It! 🤖
+
+## Create domain-oriented folders
 
 ```
 app/domains/ridesharing/trip.rb
@@ -1054,9 +1054,12 @@ background-image: url(images/aggregate-root-2.png)
 
 ---
 
-## Decrease coupling by only exposing aggregate roots
+#### Apply It! 🤖
 
-Make it a rule in your system that you may only access another domain's **Aggregate Root(s)** via:
+## Only expose aggregate roots
+
+Make it a rule that each domain only exposes **Aggregate Root(s)**
+publicly via:
 
 * Direct method calls
 * JSON payloads
@@ -1064,7 +1067,7 @@ Make it a rule in your system that you may only access another domain's **Aggreg
 
 --
 
-Internally, it's OK to reach for whatever you need.
+You may have multiple Aggregate Roots per domain.
 
 ???
 
@@ -1079,7 +1082,7 @@ in direct method calls, API payloads, event bus payloads.
 
 ---
 
-class: middle
+#### Apply It! 🤖
 
 ## Build service objects that provide Aggregate Roots
 
@@ -1091,6 +1094,12 @@ Your source domain can provide a service (Adapter) that returns the
 ???
 
 Ship these around when communicating between domains!
+
+---
+
+class: middle center background-image-contain 
+
+![With Facade assembline Aggregate Root](images/aggregate-root-4.png)
 
 ---
 
@@ -1186,7 +1195,7 @@ background-image: url(images/events-1.png)
 
 ---
 
-class: middle
+#### Apply It! 🤖
 
 ## Publish events if you need to do something in another domain
 
@@ -1243,6 +1252,8 @@ end
 ```
 
 ---
+
+#### Apply It! 🤖
 
 ## Every bounded context has its own event handler
 
@@ -1341,6 +1352,8 @@ background-image: url(images/events-2.png)
 
 ---
 
+#### Apply It! 🤖
+
 ### Now make it truly asynchronous with ActiveJob!
 
 This has been synchronous so far - everything happens within the same
@@ -1366,7 +1379,7 @@ Wisper.subscribe(Analytics::DomainEventHandler,
 
 ---
 
-### Try event-driven if:
+## Try event-driven if:
 
 * Your system's data integrity requirements allow you to be eventually consistent.
 * You don't have to manage transactions, rollbacks
@@ -1374,7 +1387,7 @@ Wisper.subscribe(Analytics::DomainEventHandler,
 
 ---
 
-### Using a message queue
+## Using a message queue
 
 Instead of using Wisper, publish a RabbitMQ event!
 
@@ -1398,6 +1411,8 @@ class: middle
 
 ---
 
+#### Apply It! 🤖
+
 ## Sharing entities between contexts
 
 **Shared Kernel** - namespace shared models in a common module or namespace:
@@ -1409,6 +1424,8 @@ class: middle
 This can later be packaged up in a gem if your systems are spread out
 
 ---
+
+#### Apply It! 🤖
 
 ## When you have one model that needs to go two places
 
@@ -1424,22 +1441,40 @@ to our internal concept.
 
 ---
 
-class: background-color-code
+class: background-color-code middle
 
 ```ruby
+# Legacy, complicated domain model
+module Common
+  class Trip < ActiveRecord::Base
+    def elapsed_time; end
+    def moving_time; end
+    def routing_efficiency_cost; end
+    def money_cost; end
+  end
+end
+
+# Nice, expressive domain model
 module Routing
   class Trip < Struct.new(:cost, :time)
-    # Nice, expressive domain model
   end
+end
+```
 
-  class TripRepository
-    def self.find_by!(*params)
-      external_trip = ::Common::Trip.find_by!(*params)
-      mapped_attrs = mapping_from(external_trip)
+---
+
+class: background-color-code middle
+
+```ruby
+# Convert between a Common::Trip to a Routing::Trip
+module Routing
+  class TripAdapter
+    def convert(external_trip)
+      attrs = mapping_from(external_trip)
       Trip.new(mapped_attrs[:cost], mapped_attrs[:time])
     end
 
-    def self.mapping_from(external_trip)
+    def mapping_from(external_trip)
       { cost: external_trip.routing_efficiency_cost,
         time: external_trip.elapsed_time }
     end
@@ -1449,28 +1484,22 @@ end
 
 ---
 
-class: background-color-code
+class: background-color-code middle
 
 ```ruby
-module FinancialTransaction
-  class Trip < Struct.new(:cost, :time)
-    # Nice, expressive domain model
-  end
-
+module Routing
   class TripRepository
     def self.find_by!(*params)
       external_trip = ::Common::Trip.find_by!(*params)
-      mapped_attrs = mapping_from(external_trip)
-      Trip.new(mapped_attrs[:cost], mapped_attrs[:time])
-    end
-
-    def self.mapping_from(external_trip)
-      { cost: external_trip.money_cost,
-        time: external_trip.moving_time }
+      TripAdapter.new.convert(external_trip)
     end
   end
 end
+
+# Module code now, instead of calling ::Common::Trip.find_by!,
+# calls Routing::TripRepository.find_by!
 ```
+
 
 ---
 
@@ -1503,10 +1532,16 @@ I recommend you read "Component-Based Rails Applications" by Stephan Hagemann
 **DDD** works well if:
 
 * You have a complex domain that needs linguistic precision.
-* You're open to experimentation and have buy-in from your Product
-Owner.
+* You work in a very large (perhaps distributed) team
+* You're open to experimentation and have buy-in from your Product Owner.
 * The whole team's open to trying it out (not a lone wolf).
 * Other teams, too.
+
+---
+
+class: background-white
+
+<img alt="Twitter" src="images/tweet.png" width="1000" />
 
 ---
 
@@ -1540,6 +1575,8 @@ class: middle
 🐦 Twitter: [@andrewhao](https://www.twitter.com/andrewhao)
 
 📬 Email: [andrew@carbonfive.com](mailto:andrew@carbonfive.com)
+
+<img src="images/c5-logo-white.png" alt="Carbon Five" style="float: right;" height="150" />
 
 ---
 
