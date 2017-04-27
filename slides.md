@@ -10,7 +10,7 @@ Andrew Hao<br />
 @andrewhao
 
 
-<img src="images/c5-logo-white.png" alt="Carbon Five" style="float: right; margin-top: -20px;" height="150" />
+<img src="images/c5-logo-white.svg" alt="Carbon Five" style="float: right; margin-top: -10px;" height="75" />
 
 ---
 
@@ -88,7 +88,7 @@ Friendly neighborhood programmer at Carbon Five
 
 class: middle center background-color-carbonfive
 
-<img src="images/c5-logo-white.png" alt="Carbon Five" height="350" />
+<img src="images/c5-logo-white.svg" alt="Carbon Five" height="200" />
 
 ---
 
@@ -889,9 +889,9 @@ Incremental refactoring, using Ruby Modules to lead the way!
 
 ---
 
-class: middle center background-image-contain background-color-white
+class: middle center background-image-cover
 
-![Extraction illustration](images/erd-8-extracting-bounded-context.png)
+background-image: url(images/erd-8-extracting-bounded-context.png)
 
 ---
 
@@ -1576,7 +1576,9 @@ class: middle
 
 📬 Email: [andrew@carbonfive.com](mailto:andrew@carbonfive.com)
 
-<img src="images/c5-logo-white.png" alt="Carbon Five" style="float: right;" height="150" />
+&nbsp;
+
+<img src="images/c5-logo-white.svg" alt="Carbon Five" style="float: right;" height="75" />
 
 ---
 
