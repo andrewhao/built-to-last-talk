@@ -1088,8 +1088,8 @@ in direct method calls, API payloads, event bus payloads.
 
 Break dependencies on AR relationships
 
-Your source domain can provide a service (Adapter) that returns the
-**Aggregate Root**
+Your source domain can provide a service that returns the
+**Aggregate Root** as a facade
 
 ???
 
@@ -1276,10 +1276,10 @@ module Analytics
     # Method name is invoked based on the name of the
     # message. This method is invoked in response to
     # the `trip_created` event.
-    def self.trip_created(params)
+    def self.trip_created(trip_id)
       # handle the action here, delegate out to a
       # service/command.
-      LogTripCreated.new.call(params)
+      LogTripCreated.new.call(trip_id)
     end
   end
 end
@@ -1336,9 +1336,9 @@ class: background-color-code
 # events!
 module FinancialTransaction
   class DomainEventHandler
-    def self.trip_created(params)
-      CreateTaxAuditLogEntry.new.call(params)
-      DeductGiftCardAmount.new.call(params)
+    def self.trip_created(trip_id)
+      CreateTaxAuditLogEntry.new.call(trip_id)
+      DeductGiftCardAmount.new.call(trip_id)
     end
   end
 end
@@ -1379,21 +1379,13 @@ Wisper.subscribe(Analytics::DomainEventHandler,
 
 ---
 
-## Try event-driven if:
-
-* Your system's data integrity requirements allow you to be eventually consistent.
-* You don't have to manage transactions, rollbacks
-* You can ensure durability of messages across the system.
-
----
-
 ## Using a message queue
 
 Instead of using Wisper, publish a RabbitMQ event!
 
 Each domain's event handlers are run as subscribers to an exchange topic.
 
-Stitch Fix's [Pwwka](https://github.com/stitchfix/pwwka) is an excellent RabbitMQ message queue implementation. You can also use [Sneakers](http://jondot.github.io/sneakers/).
+Stitch Fix's [Pwwka](https://github.com/stitchfix/pwwka) is an excellent Rails-RabbitMQ pub/sub implementation. You can also use [Sneakers](http://jondot.github.io/sneakers/).
 
 ???
 
@@ -1423,14 +1415,16 @@ class: middle
 
 This can later be packaged up in a gem if your systems are spread out
 
+???
+
 ---
 
 #### Apply It! 🤖
 
-## When you have one model that needs to go two places
+## When you have one model that needs to belong in two domains
 
 Sometimes, you have a concept that needs to be broken up. How can we get
-these concepts duplicated in different domains?
+these concepts codified in different domains?
 
 Concept: **Anti-Corruption Layer**
 
@@ -1543,6 +1537,14 @@ class: background-white
 
 <img alt="Twitter" src="images/tweet.png" width="1000" />
 
+???
+
+Oh crap, have we become the thing we were trying to get away from?
+
+Simplicity as an ends to itself is not necessarily good.
+
+For complicated domains, the pursuit of clarity is worthwhile.
+
 ---
 
 ## Know when to stop!
@@ -1563,6 +1565,16 @@ The authors will actually tell you that it's less about the patterns than it
 is about listening to the domain language.
 
 Try it out, step by step. Back it out if this doesn't "fit"
+
+---
+
+## In summary
+
+Discovered the **Domains** in our business
+
+Built a **Context Map** to see strategic insights
+
+Investigated some **refactoring patterns** to shape our systems.
 
 ---
 
